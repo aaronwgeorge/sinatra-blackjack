@@ -1,0 +1,5 @@
+<h4>Hi <%= session[:player_name] %>! Welcome to Blackjack!</h4>
+<p>Tap the Deal button to begin the game!</p>
+<form action='/game' method='post'>
+  <input type='submit' class='btn btn-success' value='Deal Cards'/>
+</form>
