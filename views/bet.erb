@@ -1,0 +1,7 @@
+<h4>Please place your bet for this hand.</h4>
+<p>You have <%= session[:player_pot].to_i %> chips.</p>
+<form action='/bet' method='post'>
+  Bet: <input type='text' name='bet_amount' />
+  </br>
+  <input type='submit' class='btn' value='Make Bet' />
+</form>
