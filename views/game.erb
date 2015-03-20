@@ -10,7 +10,7 @@
   <% end %>
 
   <h4>Blackjack Casino</h4>
-  <p>Welcome <%= session[:player_name] %>! <span id="chips"><strong>Current Bet:</strong> <%= session[:player_bet] %> <strong> Chips Remaining:</strong> <%= session[:player_pot]-session[:player_bet] %></span></p>
+  <p>Welcome <%= session[:player_name] %>! <span id="chips"><strong>Current Bet:</strong> <%= session[:bet_amount] %> <strong> Chips Remaining:</strong> <%= session[:player_pot]- session[:bet_amount] %></span></p>
 
   <% if @game_over %>
     <% if !@broke %>
