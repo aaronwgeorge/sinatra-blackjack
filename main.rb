@@ -2,7 +2,9 @@ require 'rubygems'
 require 'sinatra'
 require 'pry'
 
-set :sessions, true
+use Rack::Session::Cookie, :key => 'rack.session',
+                           :path => '/',
+                           :secret => 'asdf;lkj'
 
 helpers do
   def calc_total(cards)
