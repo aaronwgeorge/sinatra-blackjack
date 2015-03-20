@@ -67,9 +67,8 @@ before do
 end
 
 get '/' do
-  session[:player_pot] = 1000
   if session[:player_name]
-    redirect '/bet'
+    redirect '/new_game'
   else
     redirect :set_name
   end
@@ -81,23 +80,32 @@ end
 
 post '/set_name' do
   session[:player_name] = params[:player_name]
-  redirect '/'
+  redirect '/new_game'
+end
+
+get '/new_game' do
+  erb :new_game
+end
+
+post '/new_game' do
+  session[:player_pot] = 1000
+  redirect '/bet'
 end
 
 get '/bet' do
-  session[:player_bet] = nil
+  session[:bet_amount] = nil
   erb :bet
 end
 
 post '/bet' do
   if params[:bet_amount].nil? || params[:bet_amount].to_i == 0
     @error = "Please make a valid bet."
-    halt erb(:erb)
+    halt erb :bet
   elsif params[:bet_amount].to_i > session[:player_pot]
     @error = "You don't have enough chips! Try again."
-    halt erb(:erb)
+    halt erb :bet
   else
-    session[:player_bet] = params[:bet_amount].to_i
+    session[:bet_amount] = params[:bet_amount].to_i
     redirect '/game'
   end
 end  
