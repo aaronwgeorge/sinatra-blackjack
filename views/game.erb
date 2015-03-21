@@ -67,7 +67,7 @@
     <p>You have <%= calc_total(session[:player_cards]) %></p>
   </div>
 
-  <% if @show_buttons %>
+  <% if @show_player_buttons %>
     <div class='action-bar'>
       <h4>What would you like to do?</h4>
       <form id='hit' action='/player/hit' method='post'>

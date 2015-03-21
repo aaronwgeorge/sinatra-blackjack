@@ -29,13 +29,13 @@ helpers do
 
   def dealer_turn
     @show_all_cards = true
-    @show_buttons = false
+    @show_player_buttons = false
     @show_dealer_button = true 
   end
 
   def winner(msg)
     @game_over = true
-    @show_buttons = false
+    @show_player_buttons = false
     @show_dealer_button = false
     @show_all_cards = true
     @win = msg + " You won #{session[:bet_amount]} chips!"
@@ -44,7 +44,7 @@ helpers do
 
   def loser(msg)
     @game_over = true
-    @show_buttons = false
+    @show_player_buttons = false
     @show_dealer_button = false
     @show_all_cards = true
     @lose = msg + " You lost #{session[:bet_amount]} chips!"
@@ -56,7 +56,7 @@ helpers do
 
   def push(msg)
     @game_over = true
-    @show_buttons = false
+    @show_player_buttons = false
     @show_dealer_button = false
     @show_all_cards = true
     @push = msg + " Push!"
@@ -64,7 +64,7 @@ helpers do
 end
 
 before do
-  @show_buttons = true
+  @show_player_buttons = true
 end
 
 get '/' do
@@ -127,7 +127,7 @@ get '/game' do
     session[:player_cards].push(session[:deck].pop)
     session[:dealer_cards].push(session[:deck].pop)
   end
-  #check for blackjacks
+  #check for blackjacks on deal
   if calc_total(session[:player_cards]) == 21
     winner("Congrats you hit blackjack!") 
   elsif calc_total(session[:dealer_cards]) == 21
@@ -139,6 +139,7 @@ end
 
 post '/player/hit' do
   session[:player_cards].push(session[:deck].pop)
+  #check for bust
   if calc_total(session[:player_cards]) > 21
     loser("Bust!")
   end  
@@ -147,6 +148,7 @@ end
 
 post '/stay' do
   dealer_turn
+  #check for stay
   if calc_total(session[:dealer_cards]) > 16
     redirect '/game/compare'
   else 
@@ -157,6 +159,7 @@ end
 post '/dealer/hit' do
   dealer_turn
   session[:dealer_cards].push(session[:deck].pop)
+  #check for bust or stay
   if calc_total(session[:dealer_cards]) > 21
     winner("Dealer busted.")
   elsif calc_total(session[:dealer_cards]) > 16
@@ -168,7 +171,7 @@ end
 get '/game/compare' do
   dealer_total = calc_total(session[:dealer_cards])
   player_total = calc_total(session[:player_cards])
-
+  #compare totals and announce winner
   if dealer_total > player_total
     loser("Dealer has #{dealer_total} and you have #{player_total}.")
   elsif player_total > dealer_total
@@ -188,5 +191,10 @@ get '/broke' do
 end
 
 post '/rebet' do
-  redirect '/game'
+  if session[:player_pot] < session[:bet_amount]
+    @error = "You don't have enough chips! Try again."
+    erb :bet
+  else
+    redirect '/game'
+  end
 end
