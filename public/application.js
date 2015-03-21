@@ -13,7 +13,7 @@ $(document).ready(function() {
   $(document).on("click", "#stay input", function() {  
     $.ajax({
       type: 'POST',
-      url: '/dealer'
+      url: '/stay'
     }).done(function(msg) {
       $("#game").replaceWith(msg);
     });

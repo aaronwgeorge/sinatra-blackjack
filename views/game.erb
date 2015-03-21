@@ -1,32 +1,44 @@
 <div id="game">
-  <%if @success %>
-    <div class="alert alert-success"><%=@success%></div>
+  <%if @win %>
+    <div class="alert alert-success"><%=@win%></div>
   <% end %>
-  <%if @error %>
-    <div class="alert alert-error"><%=@error%></div>
+  <%if @lose %>
+    <div class="alert alert-error"><%=@lose%></div>
   <% end %>
-  <%if @info %>
-    <div class="alert alert-info"><%=@info%></div>
+  <%if @push %>
+    <div class="alert alert-info"><%=@push%></div>
   <% end %>
 
   <h4>Blackjack Casino</h4>
-  <p>Welcome <%= session[:player_name] %>! <span id="chips"><strong>Current Bet:</strong> <%= session[:bet_amount] %> <strong> Chips Remaining:</strong> <%= session[:player_pot]- session[:bet_amount] %></span></p>
+    <% if @game_over %>
+      
+      <% if !@broke %>  
+        <p>
+          Would you like to play again?
+          <span id="chips"><strong>Chip Count:</strong> <%= session[:player_pot]%></span>
+        </p>
+        <form id='rebet' action='/rebet' method='post'>
+          <input type='submit' class='btn btn-success' value='Repeat Bet (<%= session[:bet_amount] %>)' />
+        </form>  
+        <a id='change-bet' class='btn btn-primary' href='/bet'>Change Bet</a>
+        <a id='quit' class='btn btn-danger' href='/gameover'>Quit</a>
 
-  <% if @game_over %>
-    <% if !@broke %>
-      <p>Would you like to play again?</p>
-      <p>
-        <a class='btn btn-primary' href="/bet">Yes</a>
-        <a class='btn' href="/gameover">No</a>
-      </p>
+      <% else %>
+        <p>
+          Uh oh! Looks like you went broke! What would you like to do?
+          <span id="chips"><strong>Chip Count:</strong> <%= session[:player_pot] %></span>
+        </p>
+        <p>
+          <a class='btn btn-primary' href="/">Try My Luck Again</a> 
+          <a class='btn' href="http://stocksonwallstreet.net/wp-content/uploads/2010/05/n201303957_31602072_2714.jpg">Go Home</a>
+        </p> 
+      <% end %>
+    
     <% else %>
-      <p>Uh oh! Looks like you're flat broke! What would you like to do?</p>
-      <p>
-        <a class='btn btn-primary' href="/">Try My Luck Again!</a> 
-        <a class='btn' href="http://stocksonwallstreet.net/wp-content/uploads/2010/05/n201303957_31602072_2714.jpg">Go Home</a>
-      </p> 
+      <p>Good luck <%= session[:player_name] %>!</p>
+      <strong>Current Bet:</strong> <%= session[:bet_amount] %> 
+      <span id="chips"><strong> Chip Count:</strong> <%= session[:player_pot] - session[:bet_amount] %></span>
     <% end %>
-  <% end %>
 
   <div class='well' id='dealer-area'>
     <h4>Dealer</h4>
@@ -61,14 +73,10 @@
       <form id='hit' action='/player/hit' method='post'>
         <input type='submit' value='Hit' class='btn btn-success' />
       </form>
-      <form id='stay' action='/dealer' method='post'>
+      <form id='stay' action='/stay' method='post'>
         <input type='submit' value='Stay' class='btn btn-warning' />
       </form>
     </div>
   <% end %>
 
 </div>
-
-
-
-

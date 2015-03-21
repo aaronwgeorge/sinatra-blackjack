@@ -1,11 +1,11 @@
 #hit {
-  float:left;
+  float: left;
   margin-right: 10px;
   display: inline;
 }
 
 #yes {
-  float:left;
+  float: left;
   margin-right: 10px;
   display: inline;
 }
@@ -28,4 +28,18 @@
 
 #chips {
   float: right;
+}
+
+#rebet {
+  float: left;
+  margin-right: 10px;
+  display: inline;
+}
+
+#change-bet {
+  margin-right: 10px;
+}
+
+#dealer-area {
+  margin-top: 20px;
 }

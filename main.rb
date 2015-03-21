@@ -2,9 +2,7 @@ require 'rubygems'
 require 'sinatra'
 require 'pry'
 
-use Rack::Session::Cookie, :key => 'rack.session',
-                           :path => '/',
-                           :secret => 'asdf;lkj'
+set :sessions, true
 
 helpers do
   def calc_total(cards)
@@ -38,8 +36,8 @@ helpers do
     @show_buttons = false
     @show_dealer_button = false
     @show_all_cards = true
-    @success = msg
-    session[:player_pot] += session[:player_bet]
+    @win = msg + " You won #{session[:bet_amount]} chips!"
+    session[:player_pot] += session[:bet_amount]
   end
 
   def loser(msg)
@@ -47,8 +45,8 @@ helpers do
     @show_buttons = false
     @show_dealer_button = false
     @show_all_cards = true
-    @error = msg
-    session[:player_pot] -= session[:player_bet]
+    @lose = msg + " You lost #{session[:bet_amount]} chips!"
+    session[:player_pot] -= session[:bet_amount]
     if session[:player_pot] == 0
       @broke = true
     end
@@ -59,13 +57,12 @@ helpers do
     @show_buttons = false
     @show_dealer_button = false
     @show_all_cards = true
-    @info = msg
+    @push = msg + " Push!"
   end
 end
 
 before do
   @show_buttons = true
-  @show_all_cards = false
 end
 
 get '/' do
@@ -130,25 +127,24 @@ get '/game' do
   end
   #check for blackjacks
   if calc_total(session[:player_cards]) == 21
-    winner("Congrats! You hit blackjack!") 
+    winner("Congrats you hit blackjack!") 
   elsif calc_total(session[:dealer_cards]) == 21
-    loser("Dealer hit blackjack. You lose!")
+    loser("Dealer hit blackjack.")
+  else
+    erb :game
   end 
-  erb :game
 end
 
 post '/player/hit' do
   session[:player_cards].push(session[:deck].pop)
   if calc_total(session[:player_cards]) > 21
-    loser("Bust! You lose.")
-    erb :game
-  else
-    erb :game, layout: false
+    loser("Bust!")
   end  
+  erb :game, layout: false
 end
 
-post '/dealer' do
-  dealer_turn 
+post '/stay' do
+  dealer_turn
   if calc_total(session[:dealer_cards]) > 16
     redirect '/game/compare'
   else 
@@ -160,13 +156,11 @@ post '/dealer/hit' do
   dealer_turn
   session[:dealer_cards].push(session[:deck].pop)
   if calc_total(session[:dealer_cards]) > 21
-    winner("Dealer busted. You win!")
-    erb :game
+    winner("Dealer busted.")
   elsif calc_total(session[:dealer_cards]) > 16
     redirect '/game/compare'
-  else  
-    erb :game, layout: false
   end
+  erb :game, layout: false
 end
 
 get '/game/compare' do
@@ -174,13 +168,13 @@ get '/game/compare' do
   player_total = calc_total(session[:player_cards])
 
   if dealer_total > player_total
-    loser("Dealer has #{dealer_total} and you have #{player_total}. You lose!")
+    loser("Dealer has #{dealer_total} and you have #{player_total}.")
   elsif player_total > dealer_total
-    winner("You have #{player_total} and dealer has #{dealer_total}. You win!")
+    winner("You have #{player_total} and dealer has #{dealer_total}.")
   else
-    push("Player and dealer both have #{player_total}. Push!")
+    push("Player and dealer both have #{player_total}.")
   end
-  erb :game
+  erb :game, layout: false
 end
 
 get '/gameover' do
@@ -189,4 +183,8 @@ end
 
 get '/broke' do
   erb :broke
+end
+
+post '/rebet' do
+  redirect '/game'
 end
